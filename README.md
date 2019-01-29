@@ -19,7 +19,7 @@ install_github("etaymaz/CBRT")
 
 Please kindly note that you need a __key__ to download data from the CBRT's database. To get the __key__, register at the CBRT's <a href="https://evds2.tcmb.gov.tr/index.php?/" target="_blank">Electronic Data Delivery System</a>. Registration is free of charge and takes only a few minutes.
 
-If you create an object called __CBRTkey__ in R session, you do not need to define it for downloading:
+If you create an object called __myCBRTkey__ in R session, you do not need to define it for downloading:
 
 `myCBRTKey <-` _your-key_
 
