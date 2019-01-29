@@ -4,7 +4,10 @@
 \alias{getAllCategoriesInfo}
 \title{Information about data categories}
 \usage{
-getAllCategoriesInfo()
+getAllCategoriesInfo(CBRTkey = myCBRTKey)
+}
+\arguments{
+\item{CBRTkey}{Your personal CBRT access key}
 }
 \value{
 a data.table object

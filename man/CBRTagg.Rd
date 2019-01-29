@@ -8,7 +8,6 @@
 \describe{
   \item{Code}{Aggregation code}
   \item{Aggregation}{Aggregation method}
-  ...
 }}
 \usage{
 CBRTagg

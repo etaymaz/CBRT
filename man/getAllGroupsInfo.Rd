@@ -4,7 +4,10 @@
 \alias{getAllGroupsInfo}
 \title{Information about data groups}
 \usage{
-getAllGroupsInfo()
+getAllGroupsInfo(CBRTkey = myCBRTKey)
+}
+\arguments{
+\item{CBRTkey}{Your personal CBRT access key}
 }
 \value{
 a data.table object

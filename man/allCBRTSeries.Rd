@@ -18,7 +18,6 @@
   \item{aggMethod}{Data aggregation method}
   \item{freqname}{Time series frequency}
   \item{tag}{Tages (keywords)}
-  ...
 }}
 \usage{
 allCBRTSeries

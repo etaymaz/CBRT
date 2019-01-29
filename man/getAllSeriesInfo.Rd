@@ -4,7 +4,10 @@
 \alias{getAllSeriesInfo}
 \title{Information about data series}
 \usage{
-getAllSeriesInfo()
+getAllSeriesInfo(CBRTkey = myCBRTKey)
+}
+\arguments{
+\item{CBRTkey}{Your personal CBRT access key}
 }
 \value{
 a data.table object

@@ -4,11 +4,13 @@
 \alias{getDataSeries}
 \title{Downloading data series}
 \usage{
-getDataSeries(series, freq, aggType, startDate = "01-01-1950", endDate,
-  na.rm = T)
+getDataSeries(series, CBRTkey = myCBRTKey, freq, aggType,
+  startDate = "01-01-1950", endDate, na.rm = T)
 }
 \arguments{
 \item{series}{A vector of data series' codes}
+
+\item{CBRTkey}{Your personal CBRT access key}
 
 \item{freq}{Numeric, the frequency of the data series}
 

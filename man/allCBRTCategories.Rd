@@ -8,32 +8,11 @@
 \describe{
   \item{cid}{Category ID}
   \item{topic}{Topic}
-  ...
 }}
 \usage{
 allCBRTCategories
-
-allCBRTCategories
-
-allCBRTCategories
-
-allCBRTCategories
-
-allCBRTCategories
-
-allCBRTCategories
 }
 \description{
-A dataset containing the list of all data categories in the CBRT dataset
-
-A dataset containing the list of all data categories in the CBRT dataset
-
-A dataset containing the list of all data categories in the CBRT dataset
-
-A dataset containing the list of all data categories in the CBRT dataset
-
-A dataset containing the list of all data categories in the CBRT dataset
-
 A dataset containing the list of all data categories in the CBRT dataset
 }
 \keyword{datasets}

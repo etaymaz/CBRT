@@ -10,7 +10,6 @@
   \item{tfreq}{Frequency code (internal use)}
   \item{FreqEng}{Frequency name (English)}
   \item{FreqTr}{Frequency name (Turkish)}
-  ...
 }}
 \usage{
 CBRTfreq

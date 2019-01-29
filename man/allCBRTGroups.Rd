@@ -16,7 +16,6 @@
   \item{revisionPolicy}{Revision policy for the data group}
   \item{upperNote}{Upper nore}
   \item{appLing}{URL}
-  ...
 }}
 \usage{
 allCBRTGroups

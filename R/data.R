@@ -6,7 +6,6 @@
 #' \describe{
 #'   \item{cid}{Category ID}
 #'   \item{topic}{Topic}
-#'   ...
 #' }
 "allCBRTCategories"
 
@@ -26,7 +25,6 @@
 #'   \item{revisionPolicy}{Revision policy for the data group}
 #'   \item{upperNote}{Upper nore}
 #'   \item{appLing}{URL}
-#'   ...
 #' }
 "allCBRTGroups"
 
@@ -49,7 +47,6 @@
 #'   \item{aggMethod}{Data aggregation method}
 #'   \item{freqname}{Time series frequency}
 #'   \item{tag}{Tages (keywords)}
-#'   ...
 #' }
 "allCBRTSeries"
 
@@ -63,7 +60,6 @@
 #'   \item{tfreq}{Frequency code (internal use)}
 #'   \item{FreqEng}{Frequency name (English)}
 #'   \item{FreqTr}{Frequency name (Turkish)}
-#'   ...
 #' }
 "CBRTfreq"
 
@@ -75,67 +71,6 @@
 #' \describe{
 #'   \item{Code}{Aggregation code}
 #'   \item{Aggregation}{Aggregation method}
-#'   ...
 #' }
 "CBRTagg"
-
-#' Data categories
-#'
-#' A dataset containing the list of all data categories in the CBRT dataset
-#'
-#' @format A data table frame with 23 rows and 2 variables:
-#' \describe{
-#'   \item{cid}{Category ID}
-#'   \item{topic}{Topic}
-#'   ...
-#' }
-"allCBRTCategories"
-
-#' Data categories
-#'
-#' A dataset containing the list of all data categories in the CBRT dataset
-#'
-#' @format A data table frame with 23 rows and 2 variables:
-#' \describe{
-#'   \item{cid}{Category ID}
-#'   \item{topic}{Topic}
-#'   ...
-#' }
-"allCBRTCategories"
-
-#' Data categories
-#'
-#' A dataset containing the list of all data categories in the CBRT dataset
-#'
-#' @format A data table frame with 23 rows and 2 variables:
-#' \describe{
-#'   \item{cid}{Category ID}
-#'   \item{topic}{Topic}
-#'   ...
-#' }
-"allCBRTCategories"
-
-#' Data categories
-#'
-#' A dataset containing the list of all data categories in the CBRT dataset
-#'
-#' @format A data table frame with 23 rows and 2 variables:
-#' \describe{
-#'   \item{cid}{Category ID}
-#'   \item{topic}{Topic}
-#'   ...
-#' }
-"allCBRTCategories"
-
-#' Data categories
-#'
-#' A dataset containing the list of all data categories in the CBRT dataset
-#'
-#' @format A data table frame with 23 rows and 2 variables:
-#' \describe{
-#'   \item{cid}{Category ID}
-#'   \item{topic}{Topic}
-#'   ...
-#' }
-"allCBRTCategories"
 

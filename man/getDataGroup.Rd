@@ -4,10 +4,13 @@
 \alias{getDataGroup}
 \title{Downloading data groups}
 \usage{
-getDataGroup(group, freq, startDate = "01-01-1950", endDate, na.rm = T)
+getDataGroup(group, CBRTkey = myCBRTKey, freq,
+  startDate = "01-01-1950", endDate, na.rm = T)
 }
 \arguments{
 \item{group}{Code for the data group}
+
+\item{CBRTkey}{Your personal CBRT access key}
 
 \item{freq}{Numeric, the frequency of the data series}
 
