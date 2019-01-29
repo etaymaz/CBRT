@@ -1,0 +1,88 @@
+---
+title: "CBRT data on Turkish economy"
+author: "Erol Taymaz"
+date: "26 January 2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CBRT data on Turkish economy}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
+## Package
+
+The package includes functions for finding, and downloading data
+from the CBRT's database.
+
+You need a __key__ to download data from the CBRT's database. To get the __key__, please registed at the CBRT's Electronic Data Delivery System (URL: https://evds2.tcmb.gov.tr/index.php?/). Registration is free of charge and takes only a few minutes.
+
+If you create an object called __CBRTkey__, you do not need to enter it everytime:
+
+`CBRTkey <-` _your-key_
+
+
+## Structure of the data
+
+All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 24 
+data categories (including the archieved ones), 323 data groups, 
+and 22,243 data series.
+
+
+## Finding variables
+
+The CBRT data includes more than 22,000 variables (data series).
+To find variables, use the `searchCBRT` function:
+
+```{r, p0, eval = FALSE}
+searchCBRT(c("production", "labor", "labour"))
+searchCBRT(c("production", "labor", "labour"), tags = TRUE)
+```
+
+The package contains the lists of all data categories, data groups, and
+data series, as of 26 January 2019. You can update the list
+by the following commands:
+
+```{r, p1, eval = FALSE}
+allCBRTCategories <- getAllCategories()
+allCBRTGroups <- getAllGroups()
+allCBRTSeries <- getAllSeries()
+```
+
+After identifying the data group or data series, you can get 
+some information about the data by `showGroupInfo` function:
+
+```{r, p2, eval = FALSE}
+showGroupInfo("bie_apifon")
+```
+
+If you want to get only names of series in a data group, use the following command:
+
+```{r, p3, eval = FALSE}
+showSeriesNames("bie_apifon")
+```
+
+## Downloading the data
+
+You can download either one or more data series you specified, 
+or all data series in a data group. 
+
+To download individual data series, use the `getDataSeries` function:
+
+```{r, p4, eval = FALSE}
+mySeries <- getDataSeries("TP.D1TOP")
+mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
+mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+```
+
+To download all data series in a group, use the `getDataGroup` function:
+
+```{r, p5, eval = FALSE}
+myData <- getDataGroup("bie_dbafod")
+```
+If you do not define any frequency (the `freq` parameter), the default frequency will be used. If you define a lower level of frequency, the data will be aggregated by the method you may define by the `aggType` parameter. If no aggregation method is defined, the default will be used. (For the default values, use the `showGroupInfo` function.)
+
+The myData object is in __data.table__ and __data.frame__ classes, and it includes a __time__ variable, and data series. The __time__ variable will be either in `date` or `numeric` format depending on its frequency.
+
+
+
