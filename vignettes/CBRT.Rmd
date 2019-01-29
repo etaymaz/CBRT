@@ -19,7 +19,7 @@ You need a __key__ to download data from the CBRT's database. To get the __key__
 
 If you create an object called __CBRTkey__, you do not need to enter it everytime:
 
-`CBRTkey <-` _your-key_
+`myCBRTKey <-` _your-key_
 
 
 ## Structure of the data

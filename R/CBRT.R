@@ -2,7 +2,7 @@
 #'
 #' Creates a meta data object for all categories
 #'
-#'#' @param CBRTkey Your personal CBRT access key
+#' @param CBRTkey Your personal CBRT access key
 #'
 #' @return a data.table object
 #'
@@ -11,7 +11,7 @@
 #'
 #' @export
 getAllCategoriesInfo <-
-function(CBRTkey = CBRTkey)
+function(CBRTkey = myCBRTKey)
 {
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/categories/key=",
                     CBRTkey, "&type=csv")
@@ -34,7 +34,7 @@ function(CBRTkey = CBRTkey)
 #'
 #' @export
 getAllGroupsInfo <-
-function(CBRTkey = CBRTkey)
+function(CBRTkey = myCBRTKey)
 {
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/key=",
                     CBRTkey, "&mode=0&type=csv")
@@ -62,7 +62,7 @@ function(CBRTkey = CBRTkey)
 #' allCBRTSeries <- getAllSeriesInfo()
 #'
 #' @export
-getAllSeriesInfo <- function(CBRTkey = CBRTkey) {
+getAllSeriesInfo <- function(CBRTkey = myCBRTKey) {
   if (!exists("allCBRTCategories")) allCBRTCategories <- getAllCategoriesInfo()
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
   allGroupsCodes <- unique(allCBRTGroups$groupCode)
@@ -229,7 +229,7 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 #'
 #' @export
 getDataSeries <-
-function(series, CBRTkey = CBRTkey, freq, aggType, startDate = "01-01-1950", endDate, na.rm = T)
+function(series, CBRTkey = myCBRTKey, freq, aggType, startDate = "01-01-1950", endDate, na.rm = T)
 {
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
@@ -272,7 +272,7 @@ function(series, CBRTkey = CBRTkey, freq, aggType, startDate = "01-01-1950", end
 #' myData <- getDataGroup("bie_dbafod")
 #'
 #' @export
-getDataGroup <- function(group, CBRTkey = CBRTkey, freq, startDate = "01-01-1950", endDate, na.rm = T) {
+getDataGroup <- function(group, CBRTkey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = T) {
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
