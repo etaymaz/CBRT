@@ -77,6 +77,16 @@ myData <- getDataGroup("bie_dbafod")
 ```
 If you do not define any frequency (the `freq` parameter), the default frequency will be used. If you define a level of frequency lower than the default (for example, "annual" for monthly data), the data will be aggregated by the method you may define by the `aggType` parameter. If no aggregation method is defined, the default will be used. (For the default values, use the `showGroupInfo` function.)
 
+Type
+
+```{r, p6, eval = FALSE}
+CBRTfreq
+CBRTagg
+```
+
+to get the lists of frequencies, and aggregation methods.
+
+
 The myData object is in __data.table__ and __data.frame__ classes, and it includes a __time__ variable, and data series. The __time__ variable will be either in `date` or `numeric` format depending on its frequency.
 
 ## Comments and suggestions
