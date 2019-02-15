@@ -100,7 +100,7 @@ The following aggregation methods are available:
 * `first` First observation
 * `last` Last observation
 * `max` Maximum value
-* `min Minimum value
+* `min` Minimum value
 * `sum` Sum
 
 The myData object is in __data.table__ and __data.frame__ classes, and it includes a __time__ variable, and data series. The __time__ variable will be either in `date` or `numeric` format depending on its frequency.
