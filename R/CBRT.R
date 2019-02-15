@@ -2,19 +2,22 @@
 #'
 #' Creates a meta data object for all categories
 #'
-#' @param CBRTkey Your personal CBRT access key
+#' @param CBRTKey Your personal CBRT access key
 #'
 #' @return a data.table object
 #'
 #' @examples
+#' \dontrun{
 #' allCBRTSeries <- getAllCategoriesInfo()
+#' }
 #'
 #' @export
+#' @import data.table
 getAllCategoriesInfo <-
-function(CBRTkey = myCBRTKey)
+function(CBRTKey = myCBRTKey)
 {
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/categories/key=",
-                    CBRTkey, "&type=csv")
+                    CBRTKey, "&type=csv")
   catData <- fread(fileName)
   setnames(catData, c("cid", "topic", "konu"))
   return(catData[, .(cid, topic)])
@@ -25,20 +28,23 @@ function(CBRTkey = myCBRTKey)
 #'
 #' Creates a meta data object for all data gorups
 #'
-#' @param CBRTkey Your personal CBRT access key
+#' @param CBRTKey Your personal CBRT access key
 #'
 #' @return a data.table object
 #'
 #' @examples
+#' \dontrun{
 #' allCBRTGroups <- getAllGroupsInfo()
+#' }
 #'
 #' @export
+#' @import data.table
 getAllGroupsInfo <-
-function(CBRTkey = myCBRTKey)
+function(CBRTKey = myCBRTKey)
 {
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/key=",
-                    CBRTkey, "&mode=0&type=csv")
-  dataGroups <- fread(fileName)
+                    CBRTKey, "&mode=0&type=csv")
+  dataGroups <- fread(fileName, encoding = "UTF-8")
   keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink", "note",
                  "revisionPolicy", "upperNote", "appLink")
   setnames(dataGroups, c("CATEGORY_ID", "DATAGROUP_CODE", "DATAGROUP_NAME_ENG", "FREQUENCY",
@@ -46,6 +52,7 @@ function(CBRTkey = myCBRTKey)
                          "UPPER_NOTE_ENG", "APP_CHA_LINK_ENG"), keepNames)
   # Change freq variable so that it is consistent with data retrival freq
   dataGroups[, freq := match(freq, CBRTfreq$tfreq)]
+  dataGroups[, groupName := changeASCII(groupName)]
   return(dataGroups[, ..keepNames])
 }
 
@@ -54,15 +61,18 @@ function(CBRTkey = myCBRTKey)
 #'
 #' Creates a meta data object for all data series
 #'
-#' @param CBRTkey Your personal CBRT access key
+#' @param CBRTKey Your personal CBRT access key
 #'
 #' @return a data.table object
 #'
 #' @examples
+#' \dontrun{
 #' allCBRTSeries <- getAllSeriesInfo()
+#' }
 #'
 #' @export
-getAllSeriesInfo <- function(CBRTkey = myCBRTKey) {
+#' @import data.table
+getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
   if (!exists("allCBRTCategories")) allCBRTCategories <- getAllCategoriesInfo()
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
   allGroupsCodes <- unique(allCBRTGroups$groupCode)
@@ -72,7 +82,7 @@ getAllSeriesInfo <- function(CBRTkey = myCBRTKey) {
   for (i in seq_along(allGroupsCodes)) {
     gCode <- allGroupsCodes[i]
     fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/key=",
-                       CBRTkey, "&type=csv&code=", gCode)
+                       CBRTKey, "&type=csv&code=", gCode)
     series <- fread(fileName)
     setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
                        "DEFAULT_AGG_METHOD", "FREQUENCY_STR", "TAG_ENG"), keepNames)
@@ -88,6 +98,10 @@ getAllSeriesInfo <- function(CBRTkey = myCBRTKey) {
   setkey(allSeries, groupCode)
   allSeries <- allCBRTGroups[, .(cid, topic, groupCode, groupName, freq)][allSeries]
   allSeries[cid == 0 & grepl("Archive", groupName), topic := "Archived data"]
+  # Remove non-ASCII characters
+  allSeries[, groupName := changeASCII(groupName)]
+  allSeries[, seriesName := changeASCII(seriesName)]
+  allCBRTSeries[, tag := gsub("\u00A0", "", tag)]
   return(allSeries)
 }
 
@@ -100,7 +114,9 @@ getAllSeriesInfo <- function(CBRTkey = myCBRTKey) {
 #' @return formatted object
 #'
 #' @examples
+#' \dontrun{
 #' myData$myTime <- formatTime(myData$myTime)
+#' }
 #'
 #' @export
 formatTime <-
@@ -127,6 +143,7 @@ function(x)
 #' showSeriesNames("bie_apifon")
 #'
 #' @export
+#' @import data.table
 showSeriesNames <-
 function(gCode)
 {
@@ -146,6 +163,7 @@ function(gCode)
 #' showGroupInfo("bie_apifon")
 #'
 #' @export
+#' @import data.table
 showGroupInfo <-
 function(gCode)
 {
@@ -165,16 +183,19 @@ function(gCode)
 #' Search for keywords in the CBRT datasets
 #'
 #' @param keywords A vector of keywords
-#' @param field The name of the field to be searched (groups, categories, series)
+#' @param field The name of the field to be searched ("groups", "categories" or
+#' "series"). We recommend searching first the "groups" names.
 #' @param tags A logical variable that indicates if the tags to be searched
 #'
 #' @return a data.table object
 #'
 #' @examples
 #' searchCBRT(c("production", "labor", "labour"))
+#' searchCBRT(c("production", "labor", "labour"), field = "series")
 #' searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 #'
 #' @export
+#' @import data.table
 searchCBRT <-
 function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 {
@@ -210,26 +231,51 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 
 #' Downloading data series
 #'
-#' Downloads one or more data series from the CBRT datasets
+#' Downloads one or more data series from the CBRT datasets.
 #'
-#' @param series A vector of data series' codes
-#' @param CBRTkey Your personal CBRT access key
-#' @param freq Numeric, the frequency of the data series
-#' @param aggType Aggregation of data series
-#' @param startDate The beginning date for data series (DD-MM-YYYY)
-#' @param endDate The ending date for data series (DD-MM-YYYY)
-#' @param na.rm Logical variable to drop all missing dates
+#' @param series A vector of data series' codes.
+#' @param CBRTKey Your personal CBRT access key.
+#' @param freq Numeric, the frequency of the data series. If not defined, the default
+#' (the highest possible frequency) will be used. The frequencies are as follows:
+#' \describe{
+#'   \item{1}{Day}
+#'   \item{2}{Work day}
+#'   \item{3}{Week}
+#'   \item{4}{Biweekly}
+#'   \item{5}{Month}
+#'   \item{6}{Quarter}
+#'   \item{7}{Six months}
+#'   \item{8}{Year}
+#' }
+#' @param aggType Aggregation of data series. This paremeter defines the method
+#' to be used to aggregate data series from high frequency to low frequency (for
+#' example, weekly data to monthly data). The following methods are available:
+#' \describe{
+#'   \item{avg}{Average value}
+#'   \item{first}{First observation}
+#'   \item{last}{Last observation}
+#'   \item{max}{Maximum value}
+#'   \item{min}{Minimum value}
+#'   \item{sum}{Sum}
+#' }
+#' @param startDate The beginning date for data series (DD-MM-YYYY).
+#' @param endDate The ending date for data series (DD-MM-YYYY).
+#' @param na.rm Logical variable to drop all missing dates.
 #'
 #' @return a data.table object
 #'
 #' @examples
+#' \dontrun{
 #' mySeries <- getDataSeries("TP.D1TOP")
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+#' }
 #'
 #' @export
+#' @import data.table
 getDataSeries <-
-function(series, CBRTkey = myCBRTKey, freq, aggType, startDate = "01-01-1950", endDate, na.rm = T)
+function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
+         endDate, na.rm = T)
 {
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
@@ -237,7 +283,7 @@ function(series, CBRTkey = myCBRTKey, freq, aggType, startDate = "01-01-1950", e
   series <- paste(gsub("_", ".", series), collapse = "-")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/series=", series,
                      "&startDate=", startDate, "&endDate=", endDate,
-                     "&type=csv&key=", CBRTkey)
+                     "&type=csv&key=", CBRTKey)
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   if (!missing(aggType)) fileName <- paste0(fileName, "&aggregationTypes=", aggType)
   data <- fread(fileName, na.strings = c("ND", "null"))
@@ -259,26 +305,45 @@ function(series, CBRTkey = myCBRTKey, freq, aggType, startDate = "01-01-1950", e
 #'
 #' Downloads all data series of a data group
 #'
-#' @param group Code for the data group
-#' @param CBRTkey Your personal CBRT access key
-#' @param freq Numeric, the frequency of the data series
-#' @param startDate The beginning date for data series (DD-MM-YYYY)
-#' @param endDate The ending date for data series (DD-MM-YYYY)
-#' @param na.rm Logical variable to drop all missing dates
+#' @param group Code for the data group.
+#' @param CBRTKey Your personal CBRT access key.
+#' @param freq Numeric, the frequency of the data series. If not defined, the default
+#' (the highest possible frequency) will be used. The frequencies are as follows:
+#' \describe{
+#'   \item{1}{Day}
+#'   \item{2}{Work day}
+#'   \item{3}{Week}
+#'   \item{4}{Biweekly}
+#'   \item{5}{Month}
+#'   \item{6}{Quarter}
+#'   \item{7}{Six months}
+#'   \item{8}{Year}
+#' }
+#' If a frequency level lower than the default is used, the data will be aggregated
+#' by using the default method for that data group (for example, if monthly data
+#' are download for weekly series).
+#' @param startDate The beginning date for data series (DD-MM-YYYY).
+#' @param endDate The ending date for data series (DD-MM-YYYY).
+#' @param na.rm Logical variable to drop all missing dates.
 #'
 #' @return a data.table object
 #'
 #' @examples
+#' \dontrun{
 #' myData <- getDataGroup("bie_dbafod")
+#' }
 #'
 #' @export
-getDataGroup <- function(group, CBRTkey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = T) {
+#' @import data.table
+getDataGroup <-
+function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = T)
+{
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroup=", group,
                     "&startDate=", startDate, "&endDate=", endDate,
-                    "&type=csv&key=", CBRTkey)
+                    "&type=csv&key=", CBRTKey)
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   # Aggregation type is the default type for data groups
   data <- fread(fileName, na.strings = c("ND", "null"))
@@ -296,4 +361,32 @@ getDataGroup <- function(group, CBRTkey = myCBRTKey, freq, startDate = "01-01-19
   # Print series names
   if (exists("allCBRTSeries")) print(showSeriesNames(group))
   return(data)
+}
+
+
+#' Changing characters to ASCII
+#'
+#' Changes non-ASCII characters to ASCII
+#'
+#' @param x String to be modifies
+#'
+#' @return Modified string
+#'
+#' @export
+changeASCII <-
+function(x)
+{
+  x <- gsub("\u011e", "G", x, ignore.case = F)
+  x <- gsub("\u011f", "g", x, ignore.case = F)
+  x <- gsub("\u015e", "S", x, ignore.case = F)
+  x <- gsub("\u015f", "s", x, ignore.case = F)
+  x <- gsub("\u0130", "I", x, ignore.case = F)
+  x <- gsub("\u0131", "i", x, ignore.case = F)
+  x <- gsub("\u00dc", "U", x, ignore.case = F)
+  x <- gsub("\u00fc", "u", x, ignore.case = F)
+  x <- gsub("\u00d6", "O", x, ignore.case = F)
+  x <- gsub("\u00f6", "o", x, ignore.case = F)
+  x <- gsub("\u00c7", "C", x, ignore.case = F)
+  x <- gsub("\u00f6", "c", x, ignore.case = F)
+  return(x)
 }

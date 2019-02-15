@@ -10,7 +10,8 @@ searchCBRT(keywords, field = c("groups", "categories", "series"),
 \arguments{
 \item{keywords}{A vector of keywords}
 
-\item{field}{The name of the field to be searched (groups, categories, series)}
+\item{field}{The name of the field to be searched ("groups", "categories" or
+"series"). We recommend searching first the "groups" names.}
 
 \item{tags}{A logical variable that indicates if the tags to be searched}
 }
@@ -22,6 +23,7 @@ Search for keywords in the CBRT datasets
 }
 \examples{
 searchCBRT(c("production", "labor", "labour"))
+searchCBRT(c("production", "labor", "labour"), field = "series")
 searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 
 }

@@ -4,10 +4,10 @@
 \alias{getAllGroupsInfo}
 \title{Information about data groups}
 \usage{
-getAllGroupsInfo(CBRTkey = myCBRTKey)
+getAllGroupsInfo(CBRTKey = myCBRTKey)
 }
 \arguments{
-\item{CBRTkey}{Your personal CBRT access key}
+\item{CBRTKey}{Your personal CBRT access key}
 }
 \value{
 a data.table object
@@ -16,6 +16,8 @@ a data.table object
 Creates a meta data object for all data gorups
 }
 \examples{
+\dontrun{
 allCBRTGroups <- getAllGroupsInfo()
+}
 
 }

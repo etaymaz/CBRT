@@ -16,6 +16,8 @@ formatted object
 Sets the format of a time series object retrieved from the CBRT database
 }
 \examples{
+\dontrun{
 myData$myTime <- formatTime(myData$myTime)
+}
 
 }

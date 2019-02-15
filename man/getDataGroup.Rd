@@ -4,21 +4,35 @@
 \alias{getDataGroup}
 \title{Downloading data groups}
 \usage{
-getDataGroup(group, CBRTkey = myCBRTKey, freq,
+getDataGroup(group, CBRTKey = myCBRTKey, freq,
   startDate = "01-01-1950", endDate, na.rm = T)
 }
 \arguments{
-\item{group}{Code for the data group}
+\item{group}{Code for the data group.}
 
-\item{CBRTkey}{Your personal CBRT access key}
+\item{CBRTKey}{Your personal CBRT access key.}
 
-\item{freq}{Numeric, the frequency of the data series}
+\item{freq}{Numeric, the frequency of the data series. If not defined, the default
+(the highest possible frequency) will be used. The frequencies are as follows:
+\describe{
+  \item{1}{Day}
+  \item{2}{Work day}
+  \item{3}{Week}
+  \item{4}{Biweekly}
+  \item{5}{Month}
+  \item{6}{Quarter}
+  \item{7}{Six months}
+  \item{8}{Year}
+}
+If a frequency level lower than the default is used, the data will be aggregated
+by using the default method for that data group (for example, if monthly data
+are download for weekly series).}
 
-\item{startDate}{The beginning date for data series (DD-MM-YYYY)}
+\item{startDate}{The beginning date for data series (DD-MM-YYYY).}
 
-\item{endDate}{The ending date for data series (DD-MM-YYYY)}
+\item{endDate}{The ending date for data series (DD-MM-YYYY).}
 
-\item{na.rm}{Logical variable to drop all missing dates}
+\item{na.rm}{Logical variable to drop all missing dates.}
 }
 \value{
 a data.table object
@@ -27,6 +41,8 @@ a data.table object
 Downloads all data series of a data group
 }
 \examples{
+\dontrun{
 myData <- getDataGroup("bie_dbafod")
+}
 
 }

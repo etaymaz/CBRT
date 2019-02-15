@@ -4,33 +4,56 @@
 \alias{getDataSeries}
 \title{Downloading data series}
 \usage{
-getDataSeries(series, CBRTkey = myCBRTKey, freq, aggType,
+getDataSeries(series, CBRTKey = myCBRTKey, freq, aggType,
   startDate = "01-01-1950", endDate, na.rm = T)
 }
 \arguments{
-\item{series}{A vector of data series' codes}
+\item{series}{A vector of data series' codes.}
 
-\item{CBRTkey}{Your personal CBRT access key}
+\item{CBRTKey}{Your personal CBRT access key.}
 
-\item{freq}{Numeric, the frequency of the data series}
+\item{freq}{Numeric, the frequency of the data series. If not defined, the default
+(the highest possible frequency) will be used. The frequencies are as follows:
+\describe{
+  \item{1}{Day}
+  \item{2}{Work day}
+  \item{3}{Week}
+  \item{4}{Biweekly}
+  \item{5}{Month}
+  \item{6}{Quarter}
+  \item{7}{Six months}
+  \item{8}{Year}
+}}
 
-\item{aggType}{Aggregation of data series}
+\item{aggType}{Aggregation of data series. This paremeter defines the method
+to be used to aggregate data series from high frequency to low frequency (for
+example, weekly data to monthly data). The following methods are available:
+\describe{
+  \item{avg}{Average value}
+  \item{first}{First observation}
+  \item{last}{Last observation}
+  \item{max}{Maximum value}
+  \item{min}{Minimum value}
+  \item{sum}{Sum}
+}}
 
-\item{startDate}{The beginning date for data series (DD-MM-YYYY)}
+\item{startDate}{The beginning date for data series (DD-MM-YYYY).}
 
-\item{endDate}{The ending date for data series (DD-MM-YYYY)}
+\item{endDate}{The ending date for data series (DD-MM-YYYY).}
 
-\item{na.rm}{Logical variable to drop all missing dates}
+\item{na.rm}{Logical variable to drop all missing dates.}
 }
 \value{
 a data.table object
 }
 \description{
-Downloads one or more data series from the CBRT datasets
+Downloads one or more data series from the CBRT datasets.
 }
 \examples{
+\dontrun{
 mySeries <- getDataSeries("TP.D1TOP")
 mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
 mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+}
 
 }

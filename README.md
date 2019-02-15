@@ -34,6 +34,7 @@ To find variables, use the `searchCBRT` function:
 
 ```{r, p0, eval = FALSE}
 searchCBRT(c("production", "labor", "labour"))
+searchCBRT(c("production", "labor", "labour"), field = "series")
 searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 ```
 
@@ -75,17 +76,32 @@ To download all data series in a group, use the `getDataGroup` function:
 ```{r, p5, eval = FALSE}
 myData <- getDataGroup("bie_dbafod")
 ```
-If you do not define any frequency (the `freq` parameter), the default frequency will be used. If you define a level of frequency lower than the default (for example, "annual" for monthly data), the data will be aggregated by the method you may define by the `aggType` parameter. If no aggregation method is defined, the default will be used. (For the default values, use the `showGroupInfo` function.)
 
-Type
+The `freq` parameter defines the frequency of the data. If you do not define any frequency, the default frequency will be used.
 
-```{r, p6, eval = FALSE}
-CBRTfreq
-CBRTagg
-```
+The `aggType` paremeter defines the method to be used to aggregate data series from high frequency to low frequency (for example, weekly data to monthly data). If no aggregation method is defined, the default will be used. (For the default values, use the `showGroupInfo` function.) 
 
-to get the lists of frequencies, and aggregation methods.
+For example, if you define monthly frequency for weekly data, and "sum" as the aggregation method, then the monthly totals will be returned. Since a data group includes more than one series, the `getDataGroup` function does not have any `aggType` parameter, and it aggregates data series by using their default aggregation method.
 
+The following frequencies are defined (from high frequency to low frequency):
+
+* `1` Day
+* `2` Work day
+* `3` Week
+* `4` Biweekly
+* `5` Month
+* `6` Quarter
+* `7` Six months
+* `8` Year
+
+The following aggregation methods are available:
+
+* `avg` Average value
+* `first` First observation
+* `last` Last observation
+* `max` Maximum value
+* `min Minimum value
+* `sum` Sum
 
 The myData object is in __data.table__ and __data.frame__ classes, and it includes a __time__ variable, and data series. The __time__ variable will be either in `date` or `numeric` format depending on its frequency.
 
