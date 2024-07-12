@@ -16,8 +16,9 @@
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/categories/key=",
-                    CBRTKey, "&type=csv")
+  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/categories/type=csv")
+  fileName <- httr::GET(url = fileName, httr::add_headers(key = CBRTKey))
+  fileName <- httr::content(fileName, as = "text", encoding = "UTF-8")
   catData <- fread(fileName)
   setnames(catData, c("cid", "topic", "konu"))
   return(catData[, .(cid, topic)])
@@ -42,14 +43,14 @@ function(CBRTKey = myCBRTKey)
 getAllGroupsInfo <-
 function(CBRTKey = myCBRTKey)
 {
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/key=",
-                    CBRTKey, "&mode=0&type=csv")
+  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/mode=0&type=csv")
+  fileName <- httr::GET(url = fileName, httr::add_headers(key = CBRTKey))
+  fileName <- httr::content(fileName, as = "text", encoding = "UTF-8")
   dataGroups <- fread(fileName, encoding = "UTF-8")
-  keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink", "note",
-                 "revisionPolicy", "upperNote", "appLink")
+  keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink", "revisionPolicy", "appLink")
   setnames(dataGroups, c("CATEGORY_ID", "DATAGROUP_CODE", "DATAGROUP_NAME_ENG", "FREQUENCY",
-                         "DATASOURCE_ENG", "METADATA_LINK_ENG", "NOTE_ENG", "REV_POL_LINK_ENG",
-                         "UPPER_NOTE_ENG", "APP_CHA_LINK_ENG"), keepNames)
+                         "DATASOURCE_ENG", "METADATA_LINK_ENG",  "REV_POL_LINK_ENG",
+                         "APP_CHA_LINK_ENG"), keepNames, skip_absent = TRUE)
   # Change freq variable so that it is consistent with data retrival freq
   dataGroups[, freq := match(freq, CBRTfreq$tfreq)]
   dataGroups[, groupName := changeASCII(groupName)]
@@ -81,9 +82,12 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
                  "freqname", "tag")
   for (i in seq_along(allGroupsCodes)) {
     gCode <- allGroupsCodes[i]
-    fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/key=",
-                       CBRTKey, "&type=csv&code=", gCode)
+    fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/type=csv&code=", gCode)
+    fileName <- httr::GET(url = fileName, httr::add_headers(key = CBRTKey))
+    fileName <- httr::content(fileName, as = "text", encoding = "UTF-8")
+    if (fileName == "") next
     series <- fread(fileName)
+
     setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
                        "DEFAULT_AGG_METHOD", "FREQUENCY_STR", "TAG_ENG"), keepNames)
     allSeries[[i]] <- series[, ..keepNames]
@@ -283,9 +287,11 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
   series <- paste(gsub("_", ".", series), collapse = "-")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/series=", series,
                      "&startDate=", startDate, "&endDate=", endDate,
-                     "&type=csv&key=", CBRTKey)
+                     "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   if (!missing(aggType)) fileName <- paste0(fileName, "&aggregationTypes=", aggType)
+  fileName <- httr::GET(url = fileName, httr::add_headers(key = CBRTKey))
+  fileName <- httr::content(fileName, as = "text", encoding = "UTF-8")
   data <- fread(fileName, na.strings = c("ND", "null"))
   data[, c("UNIXTIME") := NULL]
   setnames(data, "Tarih", "time")
@@ -343,8 +349,10 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroup=", group,
                     "&startDate=", startDate, "&endDate=", endDate,
-                    "&type=csv&key=", CBRTKey)
+                    "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
+  fileName <- httr::GET(url = fileName, httr::add_headers(key = CBRTKey))
+  fileName <- httr::content(fileName, as = "text", encoding = "UTF-8")
   # Aggregation type is the default type for data groups
   data <- fread(fileName, na.strings = c("ND", "null"))
   data[, c("UNIXTIME") := NULL]

@@ -4,13 +4,15 @@
 \name{CBRTfreq}
 \alias{CBRTfreq}
 \title{Frequenciess}
-\format{A data table frame with 8 rows and 4 variables:
+\format{
+A data table frame with 8 rows and 4 variables:
 \describe{
   \item{freq}{Frequency code}
   \item{tfreq}{Frequency code (internal use)}
   \item{FreqEng}{Frequency name (English)}
   \item{FreqTr}{Frequency name (Turkish)}
-}}
+}
+}
 \usage{
 CBRTfreq
 }

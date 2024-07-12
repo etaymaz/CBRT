@@ -4,11 +4,13 @@
 \name{CBRTagg}
 \alias{CBRTagg}
 \title{Aggregation methods}
-\format{A data table frame with 6 rows and 2 variables:
+\format{
+A data table frame with 6 rows and 2 variables:
 \describe{
   \item{Code}{Aggregation code}
   \item{Aggregation}{Aggregation method}
-}}
+}
+}
 \usage{
 CBRTagg
 }

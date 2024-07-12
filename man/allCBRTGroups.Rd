@@ -4,7 +4,8 @@
 \name{allCBRTGroups}
 \alias{allCBRTGroups}
 \title{Data groups}
-\format{A data table with 323 rows and 10 variables:
+\format{
+A data table with 323 rows and 10 variables:
 \describe{
   \item{cid}{Category ID}
   \item{groupCode}{Data group code (used for downloading the data)}
@@ -16,7 +17,8 @@
   \item{revisionPolicy}{Revision policy for the data group}
   \item{upperNote}{Upper nore}
   \item{appLing}{URL}
-}}
+}
+}
 \usage{
 allCBRTGroups
 }

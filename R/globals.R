@@ -1,0 +1,1 @@
+utils::globalVariables(c(".", "..keepNames", "CBRTfreq", "Code", "Variable", "YEARWEEK", "aggMethod", "allCBRTCategories", "allCBRTGroups", "allCBRTSeries", "cid", "freq", "freqname", "groupCode", "groupName", "myCBRTKey", "seriesCode", "seriesName", "tag", "topic"))

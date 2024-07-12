@@ -4,8 +4,14 @@
 \alias{getDataGroup}
 \title{Downloading data groups}
 \usage{
-getDataGroup(group, CBRTKey = myCBRTKey, freq,
-  startDate = "01-01-1950", endDate, na.rm = T)
+getDataGroup(
+  group,
+  CBRTKey = myCBRTKey,
+  freq,
+  startDate = "01-01-1950",
+  endDate,
+  na.rm = T
+)
 }
 \arguments{
 \item{group}{Code for the data group.}

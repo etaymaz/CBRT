@@ -1,37 +1,50 @@
 ---
-title: "CBRT Data on Turkish Economy"
-author: "Erol Taymaz"
-date: "26 January 2019"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{CBRT Data on Turkish Economy}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+output: github_document
 ---
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Package
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
-The package includes functions for finding, and downloading data
-from the CBRT's database.
+## The package
 
-You need a __key__ to download data from the CBRT's database. To get the __key__, please registed at the CBRT's Electronic Data Delivery System (URL: https://evds2.tcmb.gov.tr/index.php?/). Registration is free of charge and takes only a few minutes.
+The CBRT package includes functions for finding, and downloading data from the Central Bank of the Republic of Turkey's database.
 
-If you create an object called __myCBRTKey__, you do not need to enter it everytime:
+The CBRT database covers more than 22,000 time series variables.
+
+You can install the package from the source by using the following command (the __CBRT__ package depends on the __data.table__ package.):
+
+```{r, eval = F}
+install.packages("http://users.metu.edu.tr/etaymaz/files/CBRT_0.1.0.tar.gz",
+                 repos = NULL, type = "source")
+```
+You may also install it from GitHub. Install the the <a href="https://github.com/r-lib/devtools">devtools</a> package if not installed, then
+
+```{r, eval = F}
+library(devtools)
+install_github("etaymaz/CBRT")
+```
+
+Please kindly note that you need a __key__ to download data from the CBRT's database. To get the __key__, register at the CBRT's <a href="https://evds2.tcmb.gov.tr/index.php?/" target="_blank">Electronic Data Delivery System</a>. Registration is free of charge and takes only a few minutes.
+
+If you create an object called __myCBRTkey__ in R session, you do not need to define it for downloading:
 
 `myCBRTKey <-` _your-key_
 
 
-## Structure of the data
+## Finding and downloading variables
 
 All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 24 
 data categories (including the archieved ones), 323 data groups, 
 and 22,243 data series.
 
-
-## Finding variables
-
-The CBRT data includes more than 22,000 variables (data series).
 To find variables, use the `searchCBRT` function:
 
 ```{r, p0, eval = FALSE}
@@ -41,13 +54,13 @@ searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 ```
 
 The package contains the lists of all data categories, data groups, and
-data series, as of 26 January 2019. You can update the list
+data series, as of 26 January 2019. You can update the lists
 by the following commands:
 
 ```{r, p1, eval = FALSE}
-allCBRTCategories <- getAllCategories()
-allCBRTGroups <- getAllGroups()
-allCBRTSeries <- getAllSeries()
+allCBRTCategories <- getAllCategoriesInfo()
+allCBRTGroups <- getAllGroupsInfo()
+allCBRTSeries <- getAllSeriesInfo()
 ```
 
 After identifying the data group or data series, you can get 
@@ -62,9 +75,6 @@ If you want to get only names of series in a data group, use the following comma
 ```{r, p3, eval = FALSE}
 showSeriesNames("bie_apifon")
 ```
-
-## Downloading the data
-
 You can download either one or more data series you specified, 
 or all data series in a data group. 
 
@@ -81,6 +91,7 @@ To download all data series in a group, use the `getDataGroup` function:
 ```{r, p5, eval = FALSE}
 myData <- getDataGroup("bie_dbafod")
 ```
+
 The `freq` parameter defines the frequency of the data. If you do not define any frequency, the default frequency will be used.
 
 The `aggType` paremeter defines the method to be used to aggregate data series from high frequency to low frequency (for example, weekly data to monthly data). If no aggregation method is defined, the default will be used. (For the default values, use the `showGroupInfo` function.) 
@@ -109,3 +120,6 @@ The following aggregation methods are available:
 
 The myData object is in __data.table__ and __data.frame__ classes, and it includes a __time__ variable, and data series. The __time__ variable will be either in `date` or `numeric` format depending on its frequency.
 
+## Comments and suggestions
+
+I would appreciate your comments, suggestions, and bug reports. Please <a href="mailto:etaymaz@metu.edu.tr">contact me by e-mail</a>.

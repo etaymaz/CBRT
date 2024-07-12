@@ -4,8 +4,15 @@
 \alias{getDataSeries}
 \title{Downloading data series}
 \usage{
-getDataSeries(series, CBRTKey = myCBRTKey, freq, aggType,
-  startDate = "01-01-1950", endDate, na.rm = T)
+getDataSeries(
+  series,
+  CBRTKey = myCBRTKey,
+  freq,
+  aggType,
+  startDate = "01-01-1950",
+  endDate,
+  na.rm = T
+)
 }
 \arguments{
 \item{series}{A vector of data series' codes.}

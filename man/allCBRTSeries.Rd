@@ -4,7 +4,8 @@
 \name{allCBRTSeries}
 \alias{allCBRTSeries}
 \title{Data series}
-\format{A data table frame with 22,243 rows and 12 variables:
+\format{
+A data table frame with 22,243 rows and 12 variables:
 \describe{
   \item{cid}{Category ID}
   \item{topic}{Topic}
@@ -18,7 +19,8 @@
   \item{aggMethod}{Data aggregation method}
   \item{freqname}{Time series frequency}
   \item{tag}{Tages (keywords)}
-}}
+}
+}
 \usage{
 allCBRTSeries
 }

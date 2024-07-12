@@ -4,11 +4,13 @@
 \name{allCBRTCategories}
 \alias{allCBRTCategories}
 \title{Data categories}
-\format{A data table with 23 rows and 2 variables:
+\format{
+A data table with 23 rows and 2 variables:
 \describe{
   \item{cid}{Category ID}
   \item{topic}{Topic}
-}}
+}
+}
 \usage{
 allCBRTCategories
 }

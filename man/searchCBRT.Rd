@@ -4,8 +4,7 @@
 \alias{searchCBRT}
 \title{Variable search}
 \usage{
-searchCBRT(keywords, field = c("groups", "categories", "series"),
-  tags = FALSE)
+searchCBRT(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 }
 \arguments{
 \item{keywords}{A vector of keywords}
