@@ -3,7 +3,7 @@ Type: Package
 Title: CBRT Data on Turkish Economy
 Version: 0.1.1
 Author: Erol Taymaz
-Maintainer: Erol Taymaz <etaymaz@smetu.edu.tr>
+Maintainer: Erol Taymaz <etaymaz@metu.edu.tr>
 Description: The package contains functions to access to the Central Bank 
     of the Republic of Turkey's Electronic Data Delivery System. It also contains 
     the lists of all data categories, data groups and data series for searching 
