@@ -16,9 +16,8 @@
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/categories/key=",
-                    CBRTKey, "&type=csv")
-  catData <- fread(fileName)
+  fileName <- "https://evds2.tcmb.gov.tr/service/evds/categories/type=csv"
+  catData <- CBRT_fread(fileName, CBRTKey)
   setnames(catData, c("cid", "topic", "konu"))
   return(catData[, .(cid, topic)])
 }
@@ -42,14 +41,15 @@ function(CBRTKey = myCBRTKey)
 getAllGroupsInfo <-
 function(CBRTKey = myCBRTKey)
 {
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/key=",
-                    CBRTKey, "&mode=0&type=csv")
-  dataGroups <- fread(fileName, encoding = "UTF-8")
-  keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink", "note",
-                 "revisionPolicy", "upperNote", "appLink")
+  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/mode=0&type=csv")
+  dataGroups <- CBRT_fread(fileName, CBRTKey, encoding = "UTF-8")
+  keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink",
+                 "revisionPolicy", "appLink", "firstDate", "lastDate")
   setnames(dataGroups, c("CATEGORY_ID", "DATAGROUP_CODE", "DATAGROUP_NAME_ENG", "FREQUENCY",
-                         "DATASOURCE_ENG", "METADATA_LINK_ENG", "NOTE_ENG", "REV_POL_LINK_ENG",
-                         "UPPER_NOTE_ENG", "APP_CHA_LINK_ENG"), keepNames)
+                         "DATASOURCE_ENG", "METADATA_LINK_ENG", "REV_POL_LINK_ENG",
+                         "APP_CHA_LINK_ENG", "END_DATE", "START_DATE"), keepNames)
+  dataGroups <- dataGroups[, ..keepNames]
+
   # Change freq variable so that it is consistent with data retrival freq
   dataGroups[, freq := match(freq, CBRTfreq$tfreq)]
   dataGroups[, groupName := changeASCII(groupName)]
@@ -79,14 +79,21 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
   allSeries <- vector(mode = "list", length = length(allGroupsCodes))
   keepNames <- c("seriesCode", "seriesName", "groupCode", "start", "end", "aggMethod",
                  "freqname", "tag")
+  nSeries <- length(allGroupsCodes)
   for (i in seq_along(allGroupsCodes)) {
     gCode <- allGroupsCodes[i]
-    fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/key=",
-                       CBRTKey, "&type=csv&code=", gCode)
-    series <- fread(fileName)
-    setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
-                       "DEFAULT_AGG_METHOD", "FREQUENCY_STR", "TAG_ENG"), keepNames)
-    allSeries[[i]] <- series[, ..keepNames]
+    cat("Series", i, "of", nSeries, ":", gCode, "\n")
+    fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/type=csv&code=", gCode)
+    tryCatch(series <- CBRT_fread(fileName, CBRTKey),
+             error = function(e) {
+               cat(gCode, "is empty \n")
+               })
+    if (exists("series") == TRUE) {
+      setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
+                         "DEFAULT_AGG_METHOD", "FREQUENCY_STR", "TAG_ENG"), keepNames)
+     allSeries[[i]] <- series[, ..keepNames]
+     rm(series)
+    }
   }
   allSeries <- do.call("rbind", allSeries)
   allSeries[grepl("^HAFTALIK", freqname), freqname := "HAFTALIK"]
@@ -101,7 +108,7 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
   # Remove non-ASCII characters
   allSeries[, groupName := changeASCII(groupName)]
   allSeries[, seriesName := changeASCII(seriesName)]
-  allCBRTSeries[, tag := gsub("\u00A0", "", tag)]
+  allSeries[, tag := gsub("\u00A0", "", tag)]
   return(allSeries)
 }
 
@@ -283,10 +290,10 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
   series <- paste(gsub("_", ".", series), collapse = "-")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/series=", series,
                      "&startDate=", startDate, "&endDate=", endDate,
-                     "&type=csv&key=", CBRTKey)
+                     "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   if (!missing(aggType)) fileName <- paste0(fileName, "&aggregationTypes=", aggType)
-  data <- fread(fileName, na.strings = c("ND", "null"))
+  data <- CBRT_fread(fileName, CBRTKey, na.strings = c("ND", "null"))
   data[, c("UNIXTIME") := NULL]
   setnames(data, "Tarih", "time")
   onames <- names(data)
@@ -343,10 +350,10 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroup=", group,
                     "&startDate=", startDate, "&endDate=", endDate,
-                    "&type=csv&key=", CBRTKey)
+                    "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   # Aggregation type is the default type for data groups
-  data <- fread(fileName, na.strings = c("ND", "null"))
+  data <- CBRT_fread(fileName, CBRTKey, na.strings = c("ND", "null"))
   data[, c("UNIXTIME") := NULL]
   setnames(data, "Tarih", "time")
   data[, time := formatTime(time)]
@@ -390,3 +397,32 @@ function(x)
   x <- gsub("\u00f6", "c", x, ignore.case = F)
   return(x)
 }
+
+
+#' CBT API function
+#'
+#' Reading the data from the CBT server
+#'
+#' @param fileName URL for API
+#'
+#' @param CBRTKey Individual key for CB API
+#'
+#' @return The data from CBRT
+#'
+#' @export
+CBRT_fread <-
+function(fileName, CBRTKey, ...)
+{
+  h <- new_handle(verbose = FALSE)
+  handle_setheaders(h, "Key" = CBRTKey)
+  x <- curl_fetch_memory(fileName, handle = h)
+  handle_reset(h)
+  if (x$status_code == 200) {
+    x <- fread(rawToChar(x$content), ...)
+    return(x)
+    }
+    else {
+    stop(paset0("Error in connecting to the CBRT server. Error code ", x$status_code))
+    }
+}
+

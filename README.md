@@ -2,12 +2,12 @@
 
 The CBRT package includes functions for finding, and downloading data from the Central Bank of the Republic of Turkey's database.
 
-The CBRT database covers more than 22,000 time series variables.
+The CBRT database covers more than 40,000 time series variables.
 
 You can install the package from the source by using the following command (the __CBRT__ package depends on the __data.table__ package.):
 
 ```{r, eval = F}
-install.packages("http://users.metu.edu.tr/etaymaz/files/CBRT_0.1.0.tar.gz",
+install.packages("http://users.metu.edu.tr/etaymaz/files/CBRT_0.1.1.tar.gz",
                  repos = NULL, type = "source")
 ```
 You may also install it from GitHub. Install the the <a href="https://github.com/r-lib/devtools">devtools</a> package if not installed, then
@@ -26,9 +26,9 @@ If you create an object called __myCBRTkey__ in R session, you do not need to de
 
 ## Finding and downloading variables
 
-All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 24 
-data categories (including the archieved ones), 323 data groups, 
-and 22,243 data series.
+All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 44 
+data categories (including the archieved ones), 496 data groups, 
+and 40,826 data series.
 
 To find variables, use the `searchCBRT` function:
 

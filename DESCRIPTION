@@ -1,7 +1,7 @@
 Package: CBRT
 Type: Package
 Title: CBRT Data on Turkish Economy
-Version: 0.1.0
+Version: 0.1.1
 Author: Erol Taymaz
 Maintainer: Erol Taymaz <etaymaz@smetu.edu.tr>
 Description: The package contains functions to access to the Central Bank 
@@ -12,7 +12,7 @@ Description: The package contains functions to access to the Central Bank
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 2.10), data.table
+Depends: R (>= 2.10), data.table, curl
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

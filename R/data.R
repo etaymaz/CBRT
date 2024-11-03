@@ -21,9 +21,9 @@
 #'   \item{freq}{Time series frequency code}
 #'   \item{source}{Data source}
 #'   \item{sourceLink}{URL of the data source}
-#'   \item{note}{Notes}
 #'   \item{revisionPolicy}{Revision policy for the data group}
-#'   \item{upperNote}{Upper nore}
+#'   \item{firstDate}{The beginning date for the data}
+#'   \item{lastDate}{The end date for the data}
 #'   \item{appLing}{URL}
 #' }
 "allCBRTGroups"

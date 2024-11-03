@@ -1,7 +1,7 @@
 ---
 title: "CBRT Data on Turkish Economy"
 author: "Erol Taymaz"
-date: "26 January 2019"
+date: "03 November 2024"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{CBRT Data on Turkish Economy}
@@ -24,14 +24,14 @@ If you create an object called __myCBRTKey__, you do not need to enter it everyt
 
 ## Structure of the data
 
-All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 24 
-data categories (including the archieved ones), 323 data groups, 
-and 22,243 data series.
+All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 44 
+data categories (including the archieved ones), 496 data groups, 
+and 40,826 data series.
 
 
 ## Finding variables
 
-The CBRT data includes more than 22,000 variables (data series).
+The CBRT data includes more than 40,826 variables (data series).
 To find variables, use the `searchCBRT` function:
 
 ```{r, p0, eval = FALSE}
@@ -41,13 +41,13 @@ searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 ```
 
 The package contains the lists of all data categories, data groups, and
-data series, as of 26 January 2019. You can update the list
+data series, as of 03 November 2024. You can update the list
 by the following commands:
 
 ```{r, p1, eval = FALSE}
-allCBRTCategories <- getAllCategories()
-allCBRTGroups <- getAllGroups()
-allCBRTSeries <- getAllSeries()
+allCBRTCategories <- getAllCategoriesInfo()
+allCBRTGroups <- getAllGroupsInfo()
+allCBRTSeries <- getAllSeriesInfo()
 ```
 
 After identifying the data group or data series, you can get 
