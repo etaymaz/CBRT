@@ -43,9 +43,9 @@ data series, as of 26 January 2019. You can update the lists
 by the following commands:
 
 ```{r, p1, eval = FALSE}
-allCBRTCategories <- getAllCategories()
-allCBRTGroups <- getAllGroups()
-allCBRTSeries <- getAllSeries()
+allCBRTCategories <- getAllCategoriesInfo()
+allCBRTGroups <- getAllGroupsInfo()
+allCBRTSeries <- getAllSeriesInfo()
 ```
 
 After identifying the data group or data series, you can get 
