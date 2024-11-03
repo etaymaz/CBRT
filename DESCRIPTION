@@ -2,13 +2,16 @@ Package: CBRT
 Type: Package
 Title: CBRT Data on Turkish Economy
 Version: 0.1.1
-Author: Erol Taymaz
+Authors@R: c(person("Erol", "Taymaz", role = c("aut", "cre"), 
+    email = "etaymaz@metu.edu.tr", comment = c(ORCID = "0000-0001-7525-6674")))
 Maintainer: Erol Taymaz <etaymaz@metu.edu.tr>
-Description: The package contains functions to access to the Central Bank 
-    of the Republic of Turkey's Electronic Data Delivery System. It also contains 
+Description: Contains functions to access to the Central Bank 
+    of the Republic of Turkey's (CBRT) Electronic Data Delivery System. It contains 
     the lists of all data categories, data groups and data series for searching 
-    available data series. These lists can alco be updated any time by the user. 
-    As of January 26, 2019, the dataset includes 26,243 time series.
+    available data series. These lists can be updated any time by the user. 
+    As of November 3, 2024, the dataset includes 40,826 time series. The user can 
+    download specific series or a group of series at different frequencies using 
+    a variety of aggregation methods 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

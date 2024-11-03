@@ -13,6 +13,7 @@
 #'
 #' @export
 #' @import data.table
+#' @import curl
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
@@ -413,16 +414,16 @@ function(x)
 CBRT_fread <-
 function(fileName, CBRTKey, ...)
 {
-  h <- new_handle(verbose = FALSE)
-  handle_setheaders(h, "Key" = CBRTKey)
-  x <- curl_fetch_memory(fileName, handle = h)
-  handle_reset(h)
+  h <- curl::new_handle(verbose = FALSE)
+  curl::handle_setheaders(h, "Key" = CBRTKey)
+  x <- curl::curl_fetch_memory(fileName, handle = h)
+  curl::handle_reset(h)
   if (x$status_code == 200) {
     x <- fread(rawToChar(x$content), ...)
     return(x)
     }
     else {
-    stop(paset0("Error in connecting to the CBRT server. Error code ", x$status_code))
+    stop(paste0("Error in connecting to the CBRT server. Error code ", x$status_code))
     }
 }
 
