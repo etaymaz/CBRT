@@ -1,3 +1,4 @@
+globalVariables(c("myCBRTKey"))
 #' Information about data categories
 #'
 #' Creates a meta data object for all categories
@@ -14,13 +15,14 @@
 #' @export
 #' @import data.table
 #' @import curl
+#' @importFrom stats time
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
   fileName <- "https://evds2.tcmb.gov.tr/service/evds/categories/type=csv"
   catData <- CBRT_fread(fileName, CBRTKey)
   setnames(catData, c("cid", "topic", "konu"))
-  return(catData[, .(cid, topic)])
+  return(catData[, c("cid", "topic")])
 }
 
 
@@ -42,6 +44,7 @@ function(CBRTKey = myCBRTKey)
 getAllGroupsInfo <-
 function(CBRTKey = myCBRTKey)
 {
+  freq <- groupName <- NULL
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/mode=0&type=csv")
   dataGroups <- CBRT_fread(fileName, CBRTKey, encoding = "UTF-8")
   keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink",
@@ -49,12 +52,12 @@ function(CBRTKey = myCBRTKey)
   setnames(dataGroups, c("CATEGORY_ID", "DATAGROUP_CODE", "DATAGROUP_NAME_ENG", "FREQUENCY",
                          "DATASOURCE_ENG", "METADATA_LINK_ENG", "REV_POL_LINK_ENG",
                          "APP_CHA_LINK_ENG", "END_DATE", "START_DATE"), keepNames)
-  dataGroups <- dataGroups[, ..keepNames]
+  dataGroups <- dataGroups[, keepNames, with = FALSE]
 
   # Change freq variable so that it is consistent with data retrival freq
-  dataGroups[, freq := match(freq, CBRTfreq$tfreq)]
+  dataGroups[, freq := match(freq, CBRT::CBRTfreq$tfreq)]
   dataGroups[, groupName := changeASCII(groupName)]
-  return(dataGroups[, ..keepNames])
+  return(dataGroups[, keepNames, with = FALSE])
 }
 
 
@@ -74,6 +77,7 @@ function(CBRTKey = myCBRTKey)
 #' @export
 #' @import data.table
 getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
+  freqname <- cid <- groupCode <- topic <- groupName <- freq <- seriesName <- tag <- NULL
   if (!exists("allCBRTCategories")) allCBRTCategories <- getAllCategoriesInfo()
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
   allGroupsCodes <- unique(allCBRTGroups$groupCode)
@@ -92,19 +96,19 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
     if (exists("series") == TRUE) {
       setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
                          "DEFAULT_AGG_METHOD", "FREQUENCY_STR", "TAG_ENG"), keepNames)
-     allSeries[[i]] <- series[, ..keepNames]
+     allSeries[[i]] <- series[, keepNames, with = FALSE]
      rm(series)
     }
   }
   allSeries <- do.call("rbind", allSeries)
   allSeries[grepl("^HAFTALIK", freqname), freqname := "HAFTALIK"]
-  allSeries[, freqname := CBRTfreq$FreqEng[match(freqname, CBRTfreq$FreqTr)]]
+  allSeries[, freqname := CBRT::CBRTfreq$FreqEng[match(freqname, CBRT::CBRTfreq$FreqTr)]]
   setkey(allCBRTCategories, cid)
   setkey(allCBRTGroups, cid)
   allCBRTGroups <- allCBRTCategories[allCBRTGroups]
   setkey(allCBRTGroups, groupCode)
   setkey(allSeries, groupCode)
-  allSeries <- allCBRTGroups[, .(cid, topic, groupCode, groupName, freq)][allSeries]
+  allSeries <- allCBRTGroups[, c("cid", "topic", "groupCode", "groupName", "freq")][allSeries]
   allSeries[cid == 0 & grepl("Archive", groupName), topic := "Archived data"]
   # Remove non-ASCII characters
   allSeries[, groupName := changeASCII(groupName)]
@@ -155,7 +159,9 @@ function(x)
 showSeriesNames <-
 function(gCode)
 {
-  return(allCBRTSeries[groupCode == gCode, .(seriesCode, seriesName, aggMethod)])
+  groupCode <- NULL
+  if (!exists("allCBRTSeries")) allCBRTSeries <- getAllSeriesInfo()
+  return(allCBRTSeries[groupCode == gCode, c("seriesCode", "seriesName", "aggMethod")])
 }
 
 
@@ -175,15 +181,17 @@ function(gCode)
 showGroupInfo <-
 function(gCode)
 {
+  groupCode <- Code <- Variable <- seriesCode <- seriesName <- aggMethod <- NULL
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
+  if (!exists("allCBRTSeries")) allCBRTSeries <- getAllSeriesInfo()
   info <- data.table(Code = names(allCBRTGroups))
   info$Variable <- t(allCBRTGroups[groupCode == gCode])
   info[Code == "freq",
-       Variable := paste0(Variable, " (", CBRTfreq$FreqEng[as.numeric(Variable)], ")" )]
-  print(info[1:7, .(Code = Code, Variable = substr(Variable, 1, 80))], justify = "left")
+       Variable := paste0(Variable, " (", CBRT::CBRTfreq$FreqEng[as.numeric(Variable)], ")" )]
+  print(info[1:7, list(Code = Code, Variable = substr(Variable, 1, 80))], justify = "left")
   if (info[8, 2] != "") cat("Note: \n", gsub("     ", "\n ", info[8, 2]), "\n")
   cat(rep("*", times = 39), "\n")
-  return(allCBRTSeries[groupCode == gCode, .(seriesCode, seriesName, aggMethod)])
+  return(allCBRTSeries[groupCode == gCode, c("seriesCode", "seriesName", "aggMethod")])
 }
 
 #' Variable search
@@ -207,20 +215,24 @@ function(gCode)
 searchCBRT <-
 function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 {
+  topic <- seriesCode <- seriesName <- groupCode <- groupName <- tag <- NULL
+  if (!exists("allCBRTCategories")) allCBRTCategories <- getAllCategoriesInfo()
+  if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
+  if (!exists("allCBRTSeries")) allCBRTSeries <- getAllSeriesInfo()
   field <- match.arg(field)
   if (field == "categories") {
     sdat <- allCBRTCategories
     sdat[, field := topic]
   } else if (field == "series") {
-    sdat <- allCBRTSeries[, .(seriesCode, seriesName, groupCode, groupName)]
+    sdat <- allCBRTSeries[, c("seriesCode", "seriesName", "groupCode", "groupName")]
     sdat[, field := seriesName]
   } else {
-    sdat <- allCBRTGroups[, .(groupCode, groupName)]
+    sdat <- allCBRTGroups[, c("groupCode", "groupName")]
     sdat[, field := groupName]
   }
 
   if (tags == T)  {
-    sdat <- allCBRTSeries[, .(seriesCode, seriesName, groupCode, groupName, tag)]
+    sdat <- allCBRTSeries[, c("seriesCode", "seriesName", "groupCode", "groupName", "tag")]
     setnames(sdat, "tag", "field")
   }
 
@@ -285,6 +297,7 @@ getDataSeries <-
 function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
          endDate, na.rm = T)
 {
+  YEARWEEK <- NULL
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
@@ -346,6 +359,7 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
 getDataGroup <-
 function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = T)
 {
+  YEARWEEK <- NULL
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
