@@ -8,7 +8,7 @@ globalVariables(c("myCBRTKey"))
 #' @return a data.table object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' allCBRTSeries <- getAllCategoriesInfo()
 #' }
 #'
@@ -35,7 +35,7 @@ function(CBRTKey = myCBRTKey)
 #' @return a data.table object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' allCBRTGroups <- getAllGroupsInfo()
 #' }
 #'
@@ -66,17 +66,18 @@ function(CBRTKey = myCBRTKey)
 #' Creates a meta data object for all data series
 #'
 #' @param CBRTKey Your personal CBRT access key
+#' @param verbose TRUE turns on status and information messages to the console
 #'
 #' @return a data.table object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' allCBRTSeries <- getAllSeriesInfo()
 #' }
 #'
 #' @export
 #' @import data.table
-getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
+getAllSeriesInfo <- function(CBRTKey = myCBRTKey, verbose = TRUE) {
   freqname <- cid <- groupCode <- topic <- groupName <- freq <- seriesName <- tag <- NULL
   if (!exists("allCBRTCategories")) allCBRTCategories <- getAllCategoriesInfo()
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
@@ -87,11 +88,11 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
   nSeries <- length(allGroupsCodes)
   for (i in seq_along(allGroupsCodes)) {
     gCode <- allGroupsCodes[i]
-    cat("Series", i, "of", nSeries, ":", gCode, "\n")
+    if (verbose) cat("Series", i, "of", nSeries, ":", gCode, "\n")
     fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/type=csv&code=", gCode)
     tryCatch(series <- CBRT_fread(fileName, CBRTKey),
              error = function(e) {
-               cat(gCode, "is empty \n")
+               warning(gCode, " is not available at CBRT database.")
                })
     if (exists("series") == TRUE) {
       setnames(series, c("SERIE_CODE", "SERIE_NAME_ENG", "DATAGROUP_CODE", "START_DATE", "END_DATE",
@@ -126,7 +127,7 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey) {
 #' @return formatted object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' myData$myTime <- formatTime(myData$myTime)
 #' }
 #'
@@ -170,6 +171,7 @@ function(gCode)
 #' Shows information about a data group
 #'
 #' @param gCode the code for the data group
+#' @param verbose TRUE turns on status and information messages to the console
 #'
 #' @return a data.table object
 #'
@@ -179,7 +181,7 @@ function(gCode)
 #' @export
 #' @import data.table
 showGroupInfo <-
-function(gCode)
+function(gCode, verbose = TRUE)
 {
   groupCode <- Code <- Variable <- seriesCode <- seriesName <- aggMethod <- NULL
   if (!exists("allCBRTGroups")) allCBRTGroups <- getAllGroupsInfo()
@@ -188,9 +190,12 @@ function(gCode)
   info$Variable <- t(allCBRTGroups[groupCode == gCode])
   info[Code == "freq",
        Variable := paste0(Variable, " (", CBRT::CBRTfreq$FreqEng[as.numeric(Variable)], ")" )]
-  print(info[1:7, list(Code = Code, Variable = substr(Variable, 1, 80))], justify = "left")
-  if (info[8, 2] != "") cat("Note: \n", gsub("     ", "\n ", info[8, 2]), "\n")
-  cat(rep("*", times = 39), "\n")
+  # Print if verbose
+  if (verbose) {
+    print(info[1:7, list(Code = Code, Variable = substr(Variable, 1, 80))], justify = "left")
+    if (info[8, 2] != "") cat("Note: \n", gsub("     ", "\n ", info[8, 2]), "\n")
+    cat(rep("*", times = 39))
+  }
   return(allCBRTSeries[groupCode == gCode, c("seriesCode", "seriesName", "aggMethod")])
 }
 
@@ -231,14 +236,14 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
     sdat[, field := groupName]
   }
 
-  if (tags == T)  {
+  if (tags == TRUE)  {
     sdat <- allCBRTSeries[, c("seriesCode", "seriesName", "groupCode", "groupName", "tag")]
     setnames(sdat, "tag", "field")
   }
 
   sres <- matrix(nrow = nrow(sdat), ncol = length(keywords))
   for (ii in seq_along(keywords)) {
-    sres[, ii] <- grepl(keywords[ii], sdat$field, ignore.case = T)
+    sres[, ii] <- grepl(keywords[ii], sdat$field, ignore.case = TRUE)
   }
 
   msum <- apply(sres, 1, sum)
@@ -246,7 +251,7 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
   sdat <- sdat[order(-msum)][msum > 0]
 
   sdat[, c("field", "msum") := NULL]
-  print(sdat, justify = "left")
+  return(sdat[])
 }
 
 #' Downloading data series
@@ -285,7 +290,7 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 #' @return a data.table object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' mySeries <- getDataSeries("TP.D1TOP")
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
@@ -295,7 +300,7 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 #' @import data.table
 getDataSeries <-
 function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
-         endDate, na.rm = T)
+         endDate, na.rm = TRUE)
 {
   YEARWEEK <- NULL
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
@@ -317,7 +322,7 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
   if (exists("YEARWEEK", where = data)) data[, YEARWEEK := NULL]
   # Remove all missing row
   nvar <- ncol(data) - 1
-  if (na.rm == T) data <- data[!(rowSums(is.na(data)) == nvar)]
+  if (na.rm == TRUE) data <- data[!(rowSums(is.na(data)) == nvar)]
   return(data)
 }
 
@@ -346,18 +351,19 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
 #' @param startDate The beginning date for data series (DD-MM-YYYY).
 #' @param endDate The ending date for data series (DD-MM-YYYY).
 #' @param na.rm Logical variable to drop all missing dates.
+#' @param verbose TRUE turns on status and information messages to the console
 #'
 #' @return a data.table object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' myData <- getDataGroup("bie_dbafod")
 #' }
 #'
 #' @export
 #' @import data.table
 getDataGroup <-
-function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = T)
+function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na.rm = TRUE, verbose = TRUE)
 {
   YEARWEEK <- NULL
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
@@ -378,10 +384,9 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
   if (exists("YEARWEEK", where = data)) data[, YEARWEEK := NULL]
   # Remove all missing row
   nvar <- ncol(data) - 1
-  if (na.rm == T) data <- data[!(rowSums(is.na(data)) == nvar)]
-  cat("\n")
-  # Print series names
-  if (exists("allCBRTSeries")) print(showSeriesNames(group))
+  if (na.rm == TRUE) data <- data[!(rowSums(is.na(data)) == nvar)]
+  # Print series names if verbose
+  if (verbose && exists("allCBRTSeries")) print(showSeriesNames(group))
   return(data)
 }
 
@@ -398,18 +403,18 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
 changeASCII <-
 function(x)
 {
-  x <- gsub("\u011e", "G", x, ignore.case = F)
-  x <- gsub("\u011f", "g", x, ignore.case = F)
-  x <- gsub("\u015e", "S", x, ignore.case = F)
-  x <- gsub("\u015f", "s", x, ignore.case = F)
-  x <- gsub("\u0130", "I", x, ignore.case = F)
-  x <- gsub("\u0131", "i", x, ignore.case = F)
-  x <- gsub("\u00dc", "U", x, ignore.case = F)
-  x <- gsub("\u00fc", "u", x, ignore.case = F)
-  x <- gsub("\u00d6", "O", x, ignore.case = F)
-  x <- gsub("\u00f6", "o", x, ignore.case = F)
-  x <- gsub("\u00c7", "C", x, ignore.case = F)
-  x <- gsub("\u00f6", "c", x, ignore.case = F)
+  x <- gsub("\u011e", "G", x, ignore.case = FALSE)
+  x <- gsub("\u011f", "g", x, ignore.case = FALSE)
+  x <- gsub("\u015e", "S", x, ignore.case = FALSE)
+  x <- gsub("\u015f", "s", x, ignore.case = FALSE)
+  x <- gsub("\u0130", "I", x, ignore.case = FALSE)
+  x <- gsub("\u0131", "i", x, ignore.case = FALSE)
+  x <- gsub("\u00dc", "U", x, ignore.case = FALSE)
+  x <- gsub("\u00fc", "u", x, ignore.case = FALSE)
+  x <- gsub("\u00d6", "O", x, ignore.case = FALSE)
+  x <- gsub("\u00f6", "o", x, ignore.case = FALSE)
+  x <- gsub("\u00c7", "C", x, ignore.case = FALSE)
+  x <- gsub("\u00f6", "c", x, ignore.case = FALSE)
   return(x)
 }
 

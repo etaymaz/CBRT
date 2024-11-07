@@ -4,10 +4,12 @@
 \alias{showGroupInfo}
 \title{Information about a data group}
 \usage{
-showGroupInfo(gCode)
+showGroupInfo(gCode, verbose = TRUE)
 }
 \arguments{
 \item{gCode}{the code for the data group}
+
+\item{verbose}{TRUE turns on status and information messages to the console}
 }
 \value{
 a data.table object

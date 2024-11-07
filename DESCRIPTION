@@ -5,14 +5,15 @@ Version: 0.1.1
 Authors@R: c(person("Erol", "Taymaz", role = c("aut", "cre"), 
     email = "etaymaz@metu.edu.tr", comment = c(ORCID = "0000-0001-7525-6674")))
 Maintainer: Erol Taymaz <etaymaz@metu.edu.tr>
-Description: The Central Bank of the Republic of Turkey (CBRT) provides 
-  one of the most extensive time series database on the Turkish Economy. 
-  The CRT package contains functions to access to the CBRT's Electronic 
-  Data Delivery System. It contains the lists of all data categories, 
-  data groups and data series for searching available data series 
-  (as of November 3, 2024, 40,826 variables). These lists can be updated 
-  any time by the user. The user can download specific series or a group 
-  of series at different frequencies using a variety of aggregation methods.
+Description: The Central Bank of the Republic of Turkey (CBRT) provides one of 
+  the most comprehensive time series databases on the Turkish economy. The 'CBRT' 
+  package provides functions for accessing the CBRT's electronic data delivery 
+  system <https://evds2.tcmb.gov.tr/>. It contains the lists of all data 
+  categories and data groups for searching the available variables (data series).  
+  As of November 3, 2024, there were 40,826 variables in the dataset. The lists 
+  of data categories and data groups can be updated by the user at any time. A 
+  specific variable, a group of variables, or all variables in a data group can 
+  be downloaded at different frequencies using a variety of aggregation methods.
 License: GPL-3
 URL: https://github.com/etaymaz/CBRT
 Encoding: UTF-8

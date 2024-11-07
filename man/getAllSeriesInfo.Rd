@@ -4,10 +4,12 @@
 \alias{getAllSeriesInfo}
 \title{Information about data series}
 \usage{
-getAllSeriesInfo(CBRTKey = myCBRTKey)
+getAllSeriesInfo(CBRTKey = myCBRTKey, verbose = TRUE)
 }
 \arguments{
 \item{CBRTKey}{Your personal CBRT access key}
+
+\item{verbose}{TRUE turns on status and information messages to the console}
 }
 \value{
 a data.table object
