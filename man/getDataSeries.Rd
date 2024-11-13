@@ -4,8 +4,15 @@
 \alias{getDataSeries}
 \title{Downloading data series}
 \usage{
-getDataSeries(series, CBRTKey = myCBRTKey, freq, aggType,
-  startDate = "01-01-1950", endDate, na.rm = TRUE)
+getDataSeries(
+  series,
+  CBRTKey = myCBRTKey,
+  freq,
+  aggType,
+  startDate = "01-01-1950",
+  endDate,
+  na.rm = TRUE
+)
 }
 \arguments{
 \item{series}{A vector of data series' codes.}
@@ -35,11 +42,15 @@ example, weekly data to monthly data). The following methods are available:
   \item{max}{Maximum value}
   \item{min}{Minimum value}
   \item{sum}{Sum}
-}}
+}
+If a frequency level lower than the default is used, the data will be aggregated
+by using the default method for that data group (for example, if monthly data
+are download for weekly series).}
 
 \item{startDate}{The beginning date for data series (DD-MM-YYYY).}
 
-\item{endDate}{The ending date for data series (DD-MM-YYYY).}
+\item{endDate}{The ending date for data series (DD-MM-YYYY). If not defined, the default
+(the latest available) will be used.}
 
 \item{na.rm}{Logical variable to drop all missing dates.}
 }

@@ -21,4 +21,4 @@ LazyData: true
 Depends: R (>= 2.10), data.table, curl
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.3.2

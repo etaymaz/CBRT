@@ -73,7 +73,7 @@ To download individual data series, use the `getDataSeries` function:
 ```{r, p4, eval = FALSE}
 mySeries <- getDataSeries("TP.D1TOP")
 mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
-mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"), startDate="01-01-2010")
 ```
 
 To download all data series in a group, use the `getDataGroup` function:

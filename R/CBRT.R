@@ -8,14 +8,11 @@ globalVariables(c("myCBRTKey"))
 #' @return a data.table object
 #'
 #' @examples
-#' \donttest{
-#' allCBRTSeries <- getAllCategoriesInfo()
+#' \dontrun{
+#' allCBRTCategories <- getAllCategoriesInfo()
 #' }
 #'
 #' @export
-#' @import data.table
-#' @import curl
-#' @importFrom stats time
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
@@ -35,7 +32,7 @@ function(CBRTKey = myCBRTKey)
 #' @return a data.table object
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' allCBRTGroups <- getAllGroupsInfo()
 #' }
 #'
@@ -46,7 +43,7 @@ function(CBRTKey = myCBRTKey)
 {
   freq <- groupName <- NULL
   fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/mode=0&type=csv")
-  dataGroups <- CBRT_fread(fileName, CBRTKey, encoding = "UTF-8")
+  dataGroups <- CBRT_fread(fileName, CBRTKey)
   keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink",
                  "revisionPolicy", "appLink", "firstDate", "lastDate")
   setnames(dataGroups, c("CATEGORY_ID", "DATAGROUP_CODE", "DATAGROUP_NAME_ENG", "FREQUENCY",
@@ -71,7 +68,7 @@ function(CBRTKey = myCBRTKey)
 #' @return a data.table object
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' allCBRTSeries <- getAllSeriesInfo()
 #' }
 #'
@@ -126,12 +123,8 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey, verbose = TRUE) {
 #'
 #' @return formatted object
 #'
-#' @examples
-#' \donttest{
-#' myData$myTime <- formatTime(myData$myTime)
-#' }
-#'
-#' @export
+#' @keywords internal
+#' @importFrom stats time
 formatTime <-
 function(x)
 {
@@ -194,7 +187,7 @@ function(gCode, verbose = TRUE)
   if (verbose) {
     print(info[1:7, list(Code = Code, Variable = substr(Variable, 1, 80))], justify = "left")
     if (info[8, 2] != "") cat("Note: \n", gsub("     ", "\n ", info[8, 2]), "\n")
-    cat(rep("*", times = 39))
+    cat(rep("*", times = 39), "\n")
   }
   return(allCBRTSeries[groupCode == gCode, c("seriesCode", "seriesName", "aggMethod")])
 }
@@ -283,14 +276,18 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 #'   \item{min}{Minimum value}
 #'   \item{sum}{Sum}
 #' }
+#' If a frequency level lower than the default is used, the data will be aggregated
+#' by using the default method for that data group (for example, if monthly data
+#' are download for weekly series).
 #' @param startDate The beginning date for data series (DD-MM-YYYY).
-#' @param endDate The ending date for data series (DD-MM-YYYY).
+#' @param endDate The ending date for data series (DD-MM-YYYY). If not defined, the default
+#' (the latest available) will be used.
 #' @param na.rm Logical variable to drop all missing dates.
 #'
 #' @return a data.table object
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mySeries <- getDataSeries("TP.D1TOP")
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
@@ -312,7 +309,7 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
                      "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   if (!missing(aggType)) fileName <- paste0(fileName, "&aggregationTypes=", aggType)
-  data <- CBRT_fread(fileName, CBRTKey, na.strings = c("ND", "null"))
+  data <- CBRT_fread(fileName, CBRTKey)
   data[, c("UNIXTIME") := NULL]
   setnames(data, "Tarih", "time")
   onames <- names(data)
@@ -349,14 +346,15 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
 #' by using the default method for that data group (for example, if monthly data
 #' are download for weekly series).
 #' @param startDate The beginning date for data series (DD-MM-YYYY).
-#' @param endDate The ending date for data series (DD-MM-YYYY).
+#' @param endDate The ending date for data series (DD-MM-YYYY). If not defined, the default
+#' (the latest available) will be used.
 #' @param na.rm Logical variable to drop all missing dates.
-#' @param verbose TRUE turns on status and information messages to the console
+#' @param verbose TRUE turns on status and information messages to the console.
 #'
 #' @return a data.table object
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' myData <- getDataGroup("bie_dbafod")
 #' }
 #'
@@ -374,7 +372,7 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
                     "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
   # Aggregation type is the default type for data groups
-  data <- CBRT_fread(fileName, CBRTKey, na.strings = c("ND", "null"))
+  data <- CBRT_fread(fileName, CBRTKey)
   data[, c("UNIXTIME") := NULL]
   setnames(data, "Tarih", "time")
   data[, time := formatTime(time)]
@@ -399,7 +397,7 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
 #'
 #' @return Modified string
 #'
-#' @export
+#' @keywords internal
 changeASCII <-
 function(x)
 {
@@ -429,16 +427,18 @@ function(x)
 #'
 #' @return The data from CBRT
 #'
-#' @export
+#' @keywords internal
+#' @import data.table
+#' @import curl
 CBRT_fread <-
-function(fileName, CBRTKey, ...)
+function(fileName, CBRTKey)
 {
   h <- curl::new_handle(verbose = FALSE)
   curl::handle_setheaders(h, "Key" = CBRTKey)
   x <- curl::curl_fetch_memory(fileName, handle = h)
   curl::handle_reset(h)
   if (x$status_code == 200) {
-    x <- fread(rawToChar(x$content), ...)
+    x <- fread(rawToChar(x$content), encoding = "UTF-8", na.strings = c("ND", "null"))
     return(x)
     }
     else {

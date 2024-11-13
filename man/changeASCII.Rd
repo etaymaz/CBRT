@@ -15,3 +15,4 @@ Modified string
 \description{
 Changes non-ASCII characters to ASCII
 }
+\keyword{internal}

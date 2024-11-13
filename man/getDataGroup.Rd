@@ -4,8 +4,15 @@
 \alias{getDataGroup}
 \title{Downloading data groups}
 \usage{
-getDataGroup(group, CBRTKey = myCBRTKey, freq,
-  startDate = "01-01-1950", endDate, na.rm = TRUE, verbose = TRUE)
+getDataGroup(
+  group,
+  CBRTKey = myCBRTKey,
+  freq,
+  startDate = "01-01-1950",
+  endDate,
+  na.rm = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{group}{Code for the data group.}
@@ -30,11 +37,12 @@ are download for weekly series).}
 
 \item{startDate}{The beginning date for data series (DD-MM-YYYY).}
 
-\item{endDate}{The ending date for data series (DD-MM-YYYY).}
+\item{endDate}{The ending date for data series (DD-MM-YYYY). If not defined, the default
+(the latest available) will be used.}
 
 \item{na.rm}{Logical variable to drop all missing dates.}
 
-\item{verbose}{TRUE turns on status and information messages to the console}
+\item{verbose}{TRUE turns on status and information messages to the console.}
 }
 \value{
 a data.table object

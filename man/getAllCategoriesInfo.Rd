@@ -17,7 +17,7 @@ Creates a meta data object for all categories
 }
 \examples{
 \dontrun{
-allCBRTSeries <- getAllCategoriesInfo()
+allCBRTCategories <- getAllCategoriesInfo()
 }
 
 }
