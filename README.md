@@ -2,7 +2,7 @@
 
 The CBRT package includes functions for finding, and downloading data from the Central Bank of the Republic of Turkey's database.
 
-The CBRT database covers more than 40,000 time series variables.
+The CBRT database covers almost 50,000 time series variables.
 
 The package is now available at <a href="https://cran.r-project.org/web/packages/CBRT/">CRAN</a> (November 13, 2024), and can be installed by
 
@@ -13,7 +13,7 @@ install.packages("CBRT")
 You can install the package from the source by using the following command (the __CBRT__ package depends on the __data.table__ and __curl__ packages.):
 
 ```{r, eval = F}
-install.packages("http://users.metu.edu.tr/etaymaz/files/CBRT_0.1.1.tar.gz",
+install.packages("http://users.metu.edu.tr/etaymaz/files/CBRT_0.2.0.tar.gz",
                  repos = NULL, type = "source")
 ```
 You may also install it from GitHub. Install the the <a href="https://github.com/r-lib/devtools">devtools</a> package if not installed, then
@@ -32,9 +32,9 @@ If you create an object called __myCBRTkey__ in R session, you do not need to de
 
 ## Finding and downloading variables
 
-All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 44 
-data categories (including the archieved ones), 496 data groups, 
-and 40,826 data series.
+All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 45 
+data categories (including the archieved ones), 575 data groups, 
+and 47,986 data series.
 
 To find variables, use the `searchCBRT` function:
 
@@ -45,7 +45,7 @@ searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 ```
 
 The package contains the lists of all data categories, data groups, and
-data series, as of 26 January 2019. You can update the lists
+data series, as of 17 February 2026. You can update the lists
 by the following commands:
 
 ```{r, p1, eval = FALSE}
@@ -74,7 +74,7 @@ To download individual data series, use the `getDataSeries` function:
 ```{r, p4, eval = FALSE}
 mySeries <- getDataSeries("TP.D1TOP")
 mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
-mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"), startDate="01-01-2010")
 ```
 
 To download all data series in a group, use the `getDataGroup` function:

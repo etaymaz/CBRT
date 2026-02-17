@@ -1,7 +1,7 @@
 ---
 title: "CBRT Data on Turkish Economy"
 author: "Erol Taymaz"
-date: "03 November 2024"
+date: "17 February 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{CBRT Data on Turkish Economy}
@@ -15,7 +15,7 @@ vignette: >
 The package includes functions for finding, and downloading data
 from the CBRT's database.
 
-You need a __key__ to download data from the CBRT's database. To get the __key__, please registed at the CBRT's Electronic Data Delivery System (URL: https://evds2.tcmb.gov.tr/index.php?/). Registration is free of charge and takes only a few minutes.
+You need a __key__ to download data from the CBRT's database. To get the __key__, please registed at the CBRT's Electronic Data Delivery System (URL: https://evds3.tcmb.gov.tr/). Registration is free of charge and takes only a few minutes.
 
 If you create an object called __myCBRTKey__, you do not need to enter it everytime:
 
@@ -24,9 +24,9 @@ If you create an object called __myCBRTKey__, you do not need to enter it everyt
 
 ## Structure of the data
 
-All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 44 
-data categories (including the archieved ones), 496 data groups, 
-and 40,826 data series.
+All __data series__ (variables) are classified into __data groups__, and data groups into __data categories__. There are 45 
+data categories (including the archieved ones), 575 data groups, 
+and 47,968 data series.
 
 
 ## Finding variables
@@ -41,7 +41,7 @@ searchCBRT(c("production", "labor", "labour"), tags = TRUE)
 ```
 
 The package contains the lists of all data categories, data groups, and
-data series, as of 03 November 2024. You can update the list
+data series, as of 17 February 2026. You can update the list
 by the following commands:
 
 ```{r, p1, eval = FALSE}

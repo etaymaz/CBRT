@@ -16,7 +16,7 @@ globalVariables(c("myCBRTKey"))
 getAllCategoriesInfo <-
 function(CBRTKey = myCBRTKey)
 {
-  fileName <- "https://evds2.tcmb.gov.tr/service/evds/categories/type=csv"
+  fileName <- "https://evds3.tcmb.gov.tr/igmevdsms-dis/categories/type=csv"
   catData <- CBRT_fread(fileName, CBRTKey)
   setnames(catData, c("cid", "topic", "konu"))
   return(catData[, c("cid", "topic")])
@@ -42,7 +42,7 @@ getAllGroupsInfo <-
 function(CBRTKey = myCBRTKey)
 {
   freq <- groupName <- NULL
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroups/mode=0&type=csv")
+  fileName <- paste0("https://evds3.tcmb.gov.tr/igmevdsms-dis/datagroups/mode=0&type=csv")
   dataGroups <- CBRT_fread(fileName, CBRTKey)
   keepNames <- c("cid", "groupCode", "groupName", "freq", "source", "sourceLink",
                  "revisionPolicy", "appLink", "firstDate", "lastDate")
@@ -86,7 +86,7 @@ getAllSeriesInfo <- function(CBRTKey = myCBRTKey, verbose = TRUE) {
   for (i in seq_along(allGroupsCodes)) {
     gCode <- allGroupsCodes[i]
     if (verbose) cat("Series", i, "of", nSeries, ":", gCode, "\n")
-    fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/serieList/type=csv&code=", gCode)
+    fileName <- paste0("https://evds3.tcmb.gov.tr/igmevdsms-dis/serieList/type=csv&code=", gCode)
     tryCatch(series <- CBRT_fread(fileName, CBRTKey),
              error = function(e) {
                warning(gCode, " is not available at CBRT database.")
@@ -290,7 +290,7 @@ function(keywords, field = c("groups", "categories", "series"), tags = FALSE)
 #' \dontrun{
 #' mySeries <- getDataSeries("TP.D1TOP")
 #' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
-#' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+#' mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"), startDate="01-01-2010")
 #' }
 #'
 #' @export
@@ -304,7 +304,7 @@ function(series, CBRTKey = myCBRTKey, freq, aggType, startDate = "01-01-1950",
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   series <- paste(gsub("_", ".", series), collapse = "-")
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/series=", series,
+  fileName <- paste0("https://evds3.tcmb.gov.tr/igmevdsms-dis/series=", series,
                      "&startDate=", startDate, "&endDate=", endDate,
                      "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
@@ -367,7 +367,7 @@ function(group, CBRTKey = myCBRTKey, freq, startDate = "01-01-1950", endDate, na
   if (missing(endDate)) endDate <- format.Date(Sys.Date(), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", startDate)) startDate <- format.Date(as.Date(startDate, format = "%Y-%m-%d"), "%d-%m-%Y")
   if (grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", endDate)) endDate <- format.Date(as.Date(endDate, format = "%Y-%m-%d"), "%d-%m-%Y")
-  fileName <- paste0("https://evds2.tcmb.gov.tr/service/evds/datagroup=", group,
+  fileName <- paste0("https://evds3.tcmb.gov.tr/igmevdsms-dis/datagroup=", group,
                     "&startDate=", startDate, "&endDate=", endDate,
                     "&type=csv")
   if (!missing(freq)) fileName <- paste0(fileName, "&frequency=", freq)
