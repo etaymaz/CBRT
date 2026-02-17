@@ -4,7 +4,7 @@ The CBRT package includes functions for finding, and downloading data from the C
 
 The CBRT database covers almost 50,000 time series variables.
 
-The package is now available at <a href="https://cran.r-project.org/web/packages/CBRT/">CRAN</a> (November 13, 2024), and can be installed by
+The package is now available at <a href="https://cran.r-project.org/web/packages/CBRT/">CRAN</a>, and can be installed by
 
 ```{r, eval = F}
 install.packages("CBRT")
