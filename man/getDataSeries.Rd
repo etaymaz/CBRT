@@ -64,7 +64,7 @@ Downloads one or more data series from the CBRT datasets.
 \dontrun{
 mySeries <- getDataSeries("TP.D1TOP")
 mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"))
-mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB", startDate="01-01-2010"))
+mySeries <- getDataSeries(c("TP.D1TOP", "TP.D2HAZ", "TP.D4TCMB"), startDate="01-01-2010")
 }
 
 }
